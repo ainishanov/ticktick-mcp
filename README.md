@@ -27,7 +27,7 @@ pip install ticktick-mcp
 ### Option 2: From source
 
 ```bash
-git clone https://github.com/ainigmatullin/ticktick-mcp.git
+git clone https://github.com/ainishanov/ticktick-mcp.git
 cd ticktick-mcp
 pip install -e .
 ```
@@ -129,7 +129,7 @@ Once configured, you can ask Claude:
 
 ```bash
 # Clone repo
-git clone https://github.com/ainigmatullin/ticktick-mcp.git
+git clone https://github.com/ainishanov/ticktick-mcp.git
 cd ticktick-mcp
 
 # Create virtual environment

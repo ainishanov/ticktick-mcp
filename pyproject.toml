@@ -47,9 +47,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ainigmatullin/ticktick-mcp"
-Repository = "https://github.com/ainigmatullin/ticktick-mcp"
-Issues = "https://github.com/ainigmatullin/ticktick-mcp/issues"
+Homepage = "https://github.com/ainishanov/ticktick-mcp"
+Repository = "https://github.com/ainishanov/ticktick-mcp"
+Issues = "https://github.com/ainishanov/ticktick-mcp/issues"
 
 [project.scripts]
 ticktick-mcp = "ticktick_mcp.server:main"
