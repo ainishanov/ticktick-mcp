@@ -98,7 +98,31 @@ Or if installed from source:
   "mcpServers": {
     "ticktick": {
       "command": "python",
-      "args": ["C:/Users/yourname/mcp-servers/ticktick/src/ticktick_mcp/server.py"]
+      "args": ["-m", "ticktick_mcp.server"],
+      "cwd": "/path/to/ticktick-mcp/src",
+      "env": {
+        "TICKTICK_ACCESS_TOKEN": "your_access_token_here"
+      }
+    }
+  }
+}
+```
+
+### Claude Code (CLI)
+
+Add to `~/.mcp.json` (macOS/Linux) or `%USERPROFILE%\.mcp.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "ticktick": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "ticktick_mcp.server"],
+      "cwd": "/path/to/ticktick-mcp/src",
+      "env": {
+        "TICKTICK_ACCESS_TOKEN": "your_access_token_here"
+      }
     }
   }
 }
