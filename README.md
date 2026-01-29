@@ -7,11 +7,26 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [T
 
 ## Features
 
-- 📋 **Get Projects** - List all your TickTick projects/lists
+### Project Management
+- 📁 **Get Projects** - List all your TickTick projects/lists
+- 📁 **Get Project by ID** - Get specific project details
+- 📁 **Get Project with Data** - Get project with all tasks and kanban columns
+- ➕ **Create Project** - Create new projects with custom colors and view modes
+- ✏️ **Update Project** - Modify project settings
+- 🗑️ **Delete Project** - Remove projects
+
+### Task Queries
 - ✅ **Get Tasks** - Retrieve tasks from all projects or a specific one
 - 📅 **Today's Tasks** - Get tasks due today
+- ⚠️ **Overdue Tasks** - Get tasks past their due date
 - 🎯 **Priority Filter** - Get high/medium priority tasks
+- 🏷️ **Filter by Tag** - Get tasks with specific tags
+- 🏷️ **Get All Tags** - List all unique tags
+
+### Task Management
 - ➕ **Create Tasks** - Add new tasks with title, priority, due date
+- ➕ **Create with Subtasks** - Add tasks with checklist items
+- ➕ **Add Subtask** - Add subtask to existing task
 - ✔️ **Complete Tasks** - Mark tasks as done
 - ✏️ **Update Tasks** - Modify existing tasks
 - 🗑️ **Delete Tasks** - Remove tasks
@@ -105,13 +120,32 @@ Once configured, you can ask Claude:
 
 ## Available Tools
 
+### Project Tools
 | Tool | Description |
 |------|-------------|
 | `get_projects` | List all TickTick projects |
+| `get_project_by_id` | Get specific project by ID |
+| `get_project_with_data` | Get project with tasks and columns |
+| `create_project` | Create a new project |
+| `update_project` | Update project settings |
+| `delete_project` | Delete a project |
+
+### Task Query Tools
+| Tool | Description |
+|------|-------------|
 | `get_tasks` | Get tasks (all or by project) |
 | `get_today_tasks` | Get tasks due today |
+| `get_overdue_tasks` | Get tasks past due date |
 | `get_high_priority_tasks` | Get high/medium priority tasks |
+| `get_tasks_by_tag` | Get tasks by tag |
+| `get_all_tags` | List all unique tags |
+
+### Task Management Tools
+| Tool | Description |
+|------|-------------|
 | `create_task` | Create a new task |
+| `create_task_with_subtasks` | Create task with checklist |
+| `add_subtask` | Add subtask to existing task |
 | `complete_task` | Mark task as complete |
 | `update_task` | Update task details |
 | `delete_task` | Delete a task |
