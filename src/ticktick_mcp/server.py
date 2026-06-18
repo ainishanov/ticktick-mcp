@@ -5,8 +5,7 @@ import logging
 from typing import Any
 
 from mcp.server import Server
-from mcp.types import Tool, TextContent
-from pydantic import AnyUrl
+from mcp.types import TextContent, Tool
 
 from .api import TickTickAPI
 
@@ -58,7 +57,10 @@ def format_tasks_list(tasks: list[dict], show_subtasks: bool = False) -> str:
     lines = [f"Found {len(tasks)} task(s):\n"]
     for task in tasks:
         lines.append(f"  • {format_task(task)}")
-        lines.append(f"    ID: {task.get('id', 'N/A')} | Project ID: {task.get('projectId', 'N/A')}")
+        lines.append(
+            f"    ID: {task.get('id', 'N/A')} | "
+            f"Project ID: {task.get('projectId', 'N/A')}"
+        )
 
         # Show subtasks if requested
         if show_subtasks:
@@ -198,7 +200,10 @@ async def list_tools() -> list[Tool]:
                 "properties": {
                     "project_id": {
                         "type": "string",
-                        "description": "Project ID to filter tasks. If not provided, returns tasks from all projects.",
+                        "description": (
+                            "Project ID to filter tasks. If not provided, returns tasks "
+                            "from all projects."
+                        ),
                     },
                 },
             },
@@ -228,7 +233,10 @@ async def list_tools() -> list[Tool]:
                     "min_priority": {
                         "type": "integer",
                         "enum": [1, 3, 5],
-                        "description": "Minimum priority level: 1=Low, 3=Medium, 5=High. Default is 3 (Medium+High).",
+                        "description": (
+                            "Minimum priority level: 1=Low, 3=Medium, 5=High. "
+                            "Default is 3 (Medium+High)."
+                        ),
                     },
                 },
             },
@@ -324,7 +332,10 @@ async def list_tools() -> list[Tool]:
                             },
                             "required": ["title"],
                         },
-                        "description": "List of subtasks. Each has 'title' and optional 'status' (0=pending, 1=done)",
+                        "description": (
+                            "List of subtasks. Each has 'title' and optional "
+                            "'status' (0=pending, 1=done)"
+                        ),
                     },
                 },
                 "required": ["title", "subtasks"],
@@ -447,9 +458,10 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
 
         elif name == "get_project_by_id":
             project = await api.get_project_by_id(arguments["project_id"])
+            project_json = json.dumps(project, indent=2)
             return [TextContent(
                 type="text",
-                text=f"{format_project(project)}\nID: {project.get('id')}\n\n{json.dumps(project, indent=2)}",
+                text=f"{format_project(project)}\nID: {project.get('id')}\n\n{project_json}",
             )]
 
         elif name == "get_project_with_data":
@@ -475,7 +487,10 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             )
             return [TextContent(
                 type="text",
-                text=f"✅ Project created: {project.get('name', 'Untitled')}\nID: {project.get('id', 'N/A')}",
+                text=(
+                    f"✅ Project created: {project.get('name', 'Untitled')}\n"
+                    f"ID: {project.get('id', 'N/A')}"
+                ),
             )]
 
         elif name == "update_project":
@@ -485,7 +500,10 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
                 color=arguments.get("color"),
                 view_mode=arguments.get("view_mode"),
             )
-            return [TextContent(type="text", text=f"✅ Project updated: {project.get('name', 'Untitled')}")]
+            return [TextContent(
+                type="text",
+                text=f"✅ Project updated: {project.get('name', 'Untitled')}",
+            )]
 
         elif name == "delete_project":
             await api.delete_project(arguments["project_id"])
@@ -537,7 +555,11 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         elif name == "get_all_tags":
             tags = await api.get_all_tags()
             if tags:
-                return [TextContent(type="text", text=f"🏷️ All tags ({len(tags)}):\n\n" + "\n".join(f"  • {t}" for t in tags))]
+                tags_text = "\n".join(f"  • {t}" for t in tags)
+                return [TextContent(
+                    type="text",
+                    text=f"🏷️ All tags ({len(tags)}):\n\n{tags_text}",
+                )]
             else:
                 return [TextContent(type="text", text="No tags found.")]
 
@@ -552,7 +574,10 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             )
             return [TextContent(
                 type="text",
-                text=f"✅ Task created: {task.get('title', 'Untitled')}\nID: {task.get('id', 'N/A')}",
+                text=(
+                    f"✅ Task created: {task.get('title', 'Untitled')}\n"
+                    f"ID: {task.get('id', 'N/A')}"
+                ),
             )]
 
         elif name == "create_task_with_subtasks":
@@ -567,11 +592,15 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             subtask_count = len(arguments.get("subtasks", []))
             return [TextContent(
                 type="text",
-                text=f"✅ Task created: {task.get('title', 'Untitled')} with {subtask_count} subtask(s)\nID: {task.get('id', 'N/A')}",
+                text=(
+                    f"✅ Task created: {task.get('title', 'Untitled')} "
+                    f"with {subtask_count} subtask(s)\n"
+                    f"ID: {task.get('id', 'N/A')}"
+                ),
             )]
 
         elif name == "add_subtask":
-            task = await api.add_subtask(
+            await api.add_subtask(
                 task_id=arguments["task_id"],
                 project_id=arguments["project_id"],
                 subtask_title=arguments["subtask_title"],
@@ -597,7 +626,10 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
                 priority=arguments.get("priority"),
                 due_date=arguments.get("due_date"),
             )
-            return [TextContent(type="text", text=f"✅ Task updated: {task.get('title', 'Untitled')}")]
+            return [TextContent(
+                type="text",
+                text=f"✅ Task updated: {task.get('title', 'Untitled')}",
+            )]
 
         elif name == "delete_task":
             await api.delete_task(

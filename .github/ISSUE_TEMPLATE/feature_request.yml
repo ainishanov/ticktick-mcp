@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest a focused improvement.
+title: "Feature: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What should this help you do?
+      description: Describe the workflow or result, not only the implementation.
+      placeholder: "I want to..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should the MCP tool or API wrapper return or change?
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Note any TickTick API limits, client behavior, or privacy concerns.

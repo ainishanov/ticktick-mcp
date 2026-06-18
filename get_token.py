@@ -1,10 +1,11 @@
-"""OAuth2 flow to get TickTick access token."""
+"""OAuth2 flow to get a TickTick access token."""
 
-import webbrowser
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
-import httpx
 import os
+import webbrowser
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs, urlparse
+
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -36,14 +37,16 @@ class OAuthHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-type", "text/html; charset=utf-8")
                 self.end_headers()
-                self.wfile.write(b"""
+                self.wfile.write(
+                    b"""
                 <html>
                 <body style="font-family: Arial; text-align: center; padding-top: 50px;">
                     <h1>Authorization Successful!</h1>
                     <p>You can close this window and return to the terminal.</p>
                 </body>
                 </html>
-                """)
+                """
+                )
             else:
                 error = query.get("error", ["Unknown error"])[0]
                 self.send_response(400)
@@ -122,7 +125,7 @@ def get_access_token():
 
         content = content.replace(
             "TICKTICK_ACCESS_TOKEN=",
-            f"TICKTICK_ACCESS_TOKEN={access_token}"
+            f"TICKTICK_ACCESS_TOKEN={access_token}",
         )
 
         with open(env_path, "w") as f:

@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a reproducible problem with the MCP server.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste access tokens, OAuth secrets, `.env` files, or private task data.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the behavior and the result you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the MCP client, command/tool call, and any safe sample input.
+      placeholder: |
+        1. Configure server with ...
+        2. Call tool ...
+        3. See error ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste only logs with tokens and private task content removed.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: ticktick-mcp 0.2.0
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: Python 3.12.0
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client
+      options:
+        - Claude Desktop
+        - Claude Code
+        - Cursor
+        - Other
