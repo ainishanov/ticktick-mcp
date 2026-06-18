@@ -143,6 +143,9 @@ Add to `~/.mcp.json` (macOS/Linux) or `%USERPROFILE%\.mcp.json` (Windows):
 
 After configuration, restart Claude Desktop to load the MCP server.
 
+If the tools do not appear or the server reports an auth error, see
+[Troubleshooting](docs/TROUBLESHOOTING.md).
+
 ## Usage Examples
 
 Once configured, you can ask Claude:
