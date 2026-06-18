@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: TickTick API documentation
+    url: https://developer.ticktick.com/docs
+    about: Check official TickTick API behavior before reporting API-level issues.
+  - name: Model Context Protocol documentation
+    url: https://modelcontextprotocol.io/
+    about: Learn how MCP servers connect to AI clients.

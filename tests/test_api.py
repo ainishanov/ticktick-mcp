@@ -1,10 +1,8 @@
 """Tests for TickTick API client."""
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
-# Note: These are example tests. You'll need to set up proper mocking
-# for the API calls since we don't want to make real API calls in tests.
+import pytest
 
 
 class TestTickTickAPI:

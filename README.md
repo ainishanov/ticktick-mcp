@@ -2,8 +2,19 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/ainishanov/ticktick-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ainishanov/ticktick-mcp/actions/workflows/ci.yml)
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [TickTick](https://ticktick.com/) task management. This enables AI assistants like Claude to interact with your TickTick tasks.
+Connect AI assistants to TickTick.
+
+TickTick MCP is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [TickTick](https://ticktick.com/). It lets Claude and other MCP clients read projects, find tasks, create tasks, and complete work from chat.
+
+## What You Can Do
+
+- Ask what is due today.
+- Find overdue or high-priority tasks.
+- Create tasks and checklist items.
+- Update, complete, or delete tasks.
+- Manage TickTick projects.
 
 ## Features
 
@@ -239,7 +250,13 @@ print(response.json())
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and avoid committing access tokens, OAuth secrets, `.env` files, or private task data.
+
+Good first contributions are small tests, docs improvements, focused error-message improvements, or mocked TickTick API fixtures.
+
+## Security
+
+Do not open public issues with credentials or private task data. See [SECURITY.md](SECURITY.md).
 
 ## License
 
