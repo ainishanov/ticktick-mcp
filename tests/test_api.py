@@ -129,10 +129,26 @@ class TestTickTickAPI:
             assert result == ["Home", "Urgent", "Work"]
             mock_get.assert_called_once()
 
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_priority_low(self, mock_api):
+        """min_priority=1 returns low, medium, and high priority tasks."""
+        tasks = [
+            {"id": "t1", "priority": 0},
+            {"id": "t2", "priority": 1},
+            {"id": "t3", "priority": 3},
+            {"id": "t4", "priority": 5},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_priority(1)
+
+            assert [t["id"] for t in result] == ["t2", "t3", "t4"]
+            mock_get.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_get_tasks_by_priority(self,mock_api):
-        """Returns tasks with specified priority."""
+    async def test_get_tasks_by_priority_medium(self, mock_api):
+        """min_priority=3 returns medium and high priority tasks."""
         tasks = [
             {"id": "t1", "priority": 0},
             {"id": "t2", "priority": 1},
@@ -147,7 +163,22 @@ class TestTickTickAPI:
             assert [t["id"] for t in result] == ["t3", "t4"]
             mock_get.assert_called_once()
 
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_priority_high(self, mock_api):
+        """min_priority=5 returns only high priority tasks."""
+        tasks = [
+            {"id": "t1", "priority": 0},
+            {"id": "t2", "priority": 1},
+            {"id": "t3", "priority": 3},
+            {"id": "t4", "priority": 5},
+        ]
 
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_priority(5)
+
+            assert [t["id"] for t in result] == ["t4"]
+            mock_get.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_tasks_by_tag(self, mock_api):
@@ -161,7 +192,7 @@ class TestTickTickAPI:
 
         with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
             mock_get.return_value = tasks
-            result = await mock_api.get_tasks_by_tag("work") #lowercase to test case insensitivity
+            result = await mock_api.get_tasks_by_tag("work")
 
             assert [t["id"] for t in result] == ["t1", "t3"]
             mock_get.assert_called_once()
