@@ -1,5 +1,6 @@
 """Tests for TickTick API client."""
 
+from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -71,4 +72,159 @@ class TestTickTickAPI:
             mock_request.assert_called_once_with(
                 "POST",
                 "/project/proj1/task/task1/complete",
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_today_tasks(self, mock_api):
+        """Returns only tasks due today."""
+        today = datetime.now().strftime("%Y-%m-%d")
+        tasks = [
+            {"id": "t1", "title": "Today task", "dueDate": f"{today}T09:00:00+0000"},
+            {"id": "t2", "title": "Tomorrow task", "dueDate": "2099-01-01T09:00:00+0000"},
+            {"id": "t3", "title": "No due date"},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_today_tasks()
+
+            assert len(result) == 1
+            assert result[0]["id"] == "t1"
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_overdue_tasks(self, mock_api):
+        """Returns tasks with due date in the past and skips future/invalid dates."""
+        past = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT12:00:00")
+        future = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%dT12:00:00")
+
+        tasks = [
+            {"id": "t1", "title": "Past task", "dueDate": past},
+            {"id": "t2", "title": "Future task", "dueDate": future},
+            {"id": "t3", "title": "Bad date", "dueDate": "not-a-date"},
+            {"id": "t4", "title": "No due date"},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_overdue_tasks()
+
+            assert [t["id"] for t in result] == ["t1"]
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_all_tags(self, mock_api):
+        """Collects unique tags and returns sorted list."""
+        tasks = [
+            {"id": "t1", "tags": ["Work", "Urgent"]},
+            {"id": "t2", "tags": ["Home", "Work"]},
+            {"id": "t3", "tags": []},
+            {"id": "t4"},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_all_tags()
+
+            assert result == ["Home", "Urgent", "Work"]
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_priority_low(self, mock_api):
+        """min_priority=1 returns low, medium, and high priority tasks."""
+        tasks = [
+            {"id": "t1", "priority": 0},
+            {"id": "t2", "priority": 1},
+            {"id": "t3", "priority": 3},
+            {"id": "t4", "priority": 5},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_priority(1)
+
+            assert [t["id"] for t in result] == ["t2", "t3", "t4"]
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_priority_medium(self, mock_api):
+        """min_priority=3 returns medium and high priority tasks."""
+        tasks = [
+            {"id": "t1", "priority": 0},
+            {"id": "t2", "priority": 1},
+            {"id": "t3", "priority": 3},
+            {"id": "t4", "priority": 5},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_priority(3)
+
+            assert [t["id"] for t in result] == ["t3", "t4"]
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_priority_high(self, mock_api):
+        """min_priority=5 returns only high priority tasks."""
+        tasks = [
+            {"id": "t1", "priority": 0},
+            {"id": "t2", "priority": 1},
+            {"id": "t3", "priority": 3},
+            {"id": "t4", "priority": 5},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_priority(5)
+
+            assert [t["id"] for t in result] == ["t4"]
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_tag(self, mock_api):
+        """Returns tasks with specified tag."""
+        tasks = [
+            {"id": "t1", "tags": ["Work"]},
+            {"id": "t2", "tags": ["Home"]},
+            {"id": "t3", "tags": ["Work", "Urgent"]},
+            {"id": "t4", "tags": []},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_tag("work")
+
+            assert [t["id"] for t in result] == ["t1", "t3"]
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_create_task_with_subtasks_builds_payload(self, mock_api):
+        """Formats due date and checklist items when creating task with subtasks."""
+        with patch.object(mock_api, "_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = {"id": "task1"}
+
+            await mock_api.create_task_with_subtasks(
+                title="Parent task",
+                project_id="proj1",
+                priority=3,
+                due_date="2026-06-20",
+                subtasks=[
+                    {"title": "Sub 1"},
+                    {"title": "Sub 2", "status": 1},
+                ],
+            )
+
+            mock_request.assert_called_once_with(
+                "POST",
+                "/task",
+                json={
+                    "title": "Parent task",
+                    "projectId": "proj1",
+                    "priority": 3,
+                    "dueDate": "2026-06-20T00:00:00+0000",
+                    "items": [
+                        {"title": "Sub 1", "status": 0, "sortOrder": 0},
+                        {"title": "Sub 2", "status": 1, "sortOrder": 1},
+                    ],
+                },
             )
