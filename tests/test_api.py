@@ -5,6 +5,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from ticktick_mcp.api import TickTickAPI
+
 
 class TestTickTickAPI:
     """Test cases for TickTickAPI class."""
