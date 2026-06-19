@@ -129,6 +129,43 @@ class TestTickTickAPI:
             assert result == ["Home", "Urgent", "Work"]
             mock_get.assert_called_once()
 
+
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_priority(self,mock_api):
+        """Returns tasks with specified priority."""
+        tasks = [
+            {"id": "t1", "priority": 0},
+            {"id": "t2", "priority": 1},
+            {"id": "t3", "priority": 3},
+            {"id": "t4", "priority": 5},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_priority(3)
+
+            assert [t["id"] for t in result] == ["t3", "t4"]
+            mock_get.assert_called_once()
+
+
+
+    @pytest.mark.asyncio
+    async def test_get_tasks_by_tag(self, mock_api):
+        """Returns tasks with specified tag."""
+        tasks = [
+            {"id": "t1", "tags": ["Work"]},
+            {"id": "t2", "tags": ["Home"]},
+            {"id": "t3", "tags": ["Work", "Urgent"]},
+            {"id": "t4", "tags": []},
+        ]
+
+        with patch.object(mock_api, "get_all_tasks", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = tasks
+            result = await mock_api.get_tasks_by_tag("work") #lowercase to test case insensitivity
+
+            assert [t["id"] for t in result] == ["t1", "t3"]
+            mock_get.assert_called_once()
+
     @pytest.mark.asyncio
     async def test_create_task_with_subtasks_builds_payload(self, mock_api):
         """Formats due date and checklist items when creating task with subtasks."""
