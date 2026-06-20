@@ -88,3 +88,16 @@ def test_format_project_fallbacks():
     result=format_project(mock_partial_project)
     # name defaults to 'Untitled', viewMode defaults to 'list', color defaults to empty string
     assert result=="📁 Untitled (list) "
+
+def test_format_tasks_list_missing_ids_fallback():
+    """Verify format_tasks_list handles tasks missing 'id' and 'projectId' keys gracefully."""
+    mock_incomplete_tasks=[
+        {
+            "title": "Task Without IDs",
+            "priority": 0
+        }
+    ]
+
+    result=format_tasks_list(mock_incomplete_tasks)
+
+    assert "ID: N/A | Project ID: N/A" in result
