@@ -1,7 +1,8 @@
 """Tests for TickTick API client."""
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
+import httpx
 import pytest
 
 
@@ -72,3 +73,64 @@ class TestTickTickAPI:
                 "POST",
                 "/project/proj1/task/task1/complete",
             )
+
+    @pytest.mark.asyncio
+    async def test_request_raises_http_status_error(self, mock_api):
+        """Test that API request errors raise HTTPStatusError for 4xx responses."""
+        with patch("ticktick_mcp.api.httpx.AsyncClient") as mock_client_cls:
+            mock_client = AsyncMock()
+            mock_response = Mock()
+            mock_response.status_code = 401
+            mock_response.request = httpx.Request("GET", "https://api.ticktick.com/open/v1/project")
+            mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+                "401 Client Error: Unauthorized",
+                request=mock_response.request,
+                response=mock_response,
+            )
+            mock_client.request = AsyncMock(return_value=mock_response)
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_cls.return_value = mock_client
+
+            with pytest.raises(httpx.HTTPStatusError):
+                await mock_api._request("GET", "/project")
+
+    @pytest.mark.asyncio
+    async def test_request_raises_http_status_error_for_server_error(self, mock_api):
+        """Test that server-side API errors raise HTTPStatusError."""
+        with patch("ticktick_mcp.api.httpx.AsyncClient") as mock_client_cls:
+            mock_client = AsyncMock()
+            mock_response = Mock()
+            mock_response.status_code = 500
+            mock_response.request = httpx.Request("POST", "https://api.ticktick.com/open/v1/task")
+            mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+                "500 Internal Server Error",
+                request=mock_response.request,
+                response=mock_response,
+            )
+            mock_client.request = AsyncMock(return_value=mock_response)
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_cls.return_value = mock_client
+
+            with pytest.raises(httpx.HTTPStatusError):
+                await mock_api._request("POST", "/task")
+
+    @pytest.mark.asyncio
+    async def test_request_returns_empty_dict_for_204(self, mock_api):
+        """Test that no-content API responses return an empty dict."""
+        with patch("ticktick_mcp.api.httpx.AsyncClient") as mock_client_cls:
+            mock_client = AsyncMock()
+            mock_response = Mock()
+            mock_response.status_code = 204
+            mock_response.raise_for_status.return_value = None
+            mock_response.json = Mock()
+            mock_client.request = AsyncMock(return_value=mock_response)
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_cls.return_value = mock_client
+
+            data = await mock_api._request("DELETE", "/project/proj1")
+
+            assert data == {}
+            mock_response.json.assert_not_called()
