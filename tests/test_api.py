@@ -16,11 +16,6 @@ def mock_api():
 class TestTickTickAPI:
     """Test cases for TickTickAPI class."""
 
-    @pytest.fixture
-    def mock_api(self):
-        """Create a mock API instance."""
-        with patch.dict("os.environ", {"TICKTICK_ACCESS_TOKEN": "test_token"}):
-            return TickTickAPI()
 
     def test_api_requires_token(self):
         """Test that API raises error without token."""
