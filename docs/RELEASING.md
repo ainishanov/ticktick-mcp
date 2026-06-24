@@ -8,7 +8,7 @@ It is intended for maintainers; contributors do not need to follow it.
 Run all local checks before tagging a release:
 
 ```bash
-python -m compileall src
+python -m compileall src tests
 ruff check .
 pytest
 ```
@@ -23,11 +23,16 @@ Edit `pyproject.toml` and update the `version` field:
 version = "0.x.y"
 ```
 
+Update both release version fields before building:
+
+- `pyproject.toml` `[project].version`
+- `src/ticktick_mcp/__init__.py` `__version__`
+
 Use [Semantic Versioning](https://semver.org/):
 
-- **Patch** (`0.x.y+1`): bug fixes, doc updates, no new features.
-- **Minor** (`0.x+1.0`): new features, backward-compatible.
-- **Major** (`0+1.0.0`): breaking changes.
+- **Patch** (`0.2.0` to `0.2.1`): bug fixes, doc updates, no new features.
+- **Minor** (`0.2.0` to `0.3.0`): new features, backward-compatible.
+- **Major** (`0.2.0` to `1.0.0`): breaking changes.
 
 ## 3. Build the distribution
 
@@ -56,6 +61,13 @@ source /tmp/test-venv/bin/activate
 pip install --index-url https://test.pypi.org/simple/ ticktick-mcp==0.x.y
 ```
 
+If dependency resolution fails because a dependency is not available on TestPyPI,
+retry with PyPI as an extra package index:
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ ticktick-mcp==0.x.y
+```
+
 ## 5. Upload to PyPI
 
 ```bash
@@ -66,14 +78,13 @@ python -m twine upload dist/*
 
 ```bash
 git tag -a v0.x.y -m "Release v0.x.y"
-git push upstream v0.x.y
+git push origin v0.x.y
 ```
 
 ## 7. Post-release
 
 - Verify `pip install ticktick-mcp==0.x.y` works.
 - Create a GitHub Release from the tag with a changelog summary.
-- Update the `__version__` in `src/ticktick_mcp/__init__.py` to match.
 
 ## PyPI token safety
 
