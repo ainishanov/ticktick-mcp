@@ -81,12 +81,15 @@ Edit `.env` and add your token:
 TICKTICK_ACCESS_TOKEN=your_access_token_here
 ```
 
-### 3. Configure Claude Desktop
+### 3. Configure MCP clients
 
-Add to your Claude Desktop config file:
+`pip install` adds `ticktick-mcp` to your Python environment, so `cwd` is typically not required.
+For source checkouts, set `cwd` to `/path/to/ticktick-mcp/src` so Python can import `ticktick_mcp` from the local source tree.
+
+#### 3a. Claude Desktop
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\Claude Desktop\claude_desktop_config.json`
 
 ```json
 {
@@ -102,7 +105,7 @@ Add to your Claude Desktop config file:
 }
 ```
 
-Or if installed from source:
+If you run from source:
 
 ```json
 {
@@ -119,9 +122,26 @@ Or if installed from source:
 }
 ```
 
-### Claude Code (CLI)
+#### 3b. Claude Code (CLI)
 
 Add to `~/.mcp.json` (macOS/Linux) or `%USERPROFILE%\.mcp.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "ticktick": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "ticktick_mcp.server"],
+      "env": {
+        "TICKTICK_ACCESS_TOKEN": "your_access_token_here"
+      }
+    }
+  }
+}
+```
+
+From source:
 
 ```json
 {
@@ -139,9 +159,67 @@ Add to `~/.mcp.json` (macOS/Linux) or `%USERPROFILE%\.mcp.json` (Windows):
 }
 ```
 
-### 4. Restart Claude Desktop
+#### 3c. Cursor
 
-After configuration, restart Claude Desktop to load the MCP server.
+Add a new MCP entry to Cursor’s config (often `~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "ticktick": {
+      "command": "python",
+      "args": ["-m", "ticktick_mcp.server"],
+      "env": {
+        "TICKTICK_ACCESS_TOKEN": "your_access_token_here"
+      }
+    }
+  }
+}
+```
+
+#### 3d. Continue
+
+Add to Continue’s MCP config file (for example, `~/.continue/config.json`):
+
+```json
+{
+  "mcpServers": {
+    "ticktick": {
+      "command": "python",
+      "args": ["-m", "ticktick_mcp.server"],
+      "cwd": "/path/to/ticktick-mcp/src",
+      "env": {
+        "TICKTICK_ACCESS_TOKEN": "your_access_token_here"
+      }
+    }
+  }
+}
+```
+
+#### 3e. Generic stdio-compatible MCP config
+
+Most MCP clients accept a similar shape. Use the same block format and place it in
+your client’s MCP server configuration area:
+
+```json
+{
+  "mcpServers": {
+    "ticktick": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "ticktick_mcp.server"],
+      "cwd": "/path/to/ticktick-mcp/src",
+      "env": {
+        "TICKTICK_ACCESS_TOKEN": "your_access_token_here"
+      }
+    }
+  }
+}
+```
+
+### 4. Restart your MCP client
+
+After configuration, restart the MCP client to load the server.
 
 If the tools do not appear or the server reports an auth error, see
 [Troubleshooting](docs/TROUBLESHOOTING.md).
@@ -256,6 +334,8 @@ print(response.json())
 Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and avoid committing access tokens, OAuth secrets, `.env` files, or private task data.
 
 Good first contributions are small tests, docs improvements, focused error-message improvements, or mocked TickTick API fixtures.
+
+Maintainers releasing a new version should follow the [release checklist](docs/RELEASING.md).
 
 ## Security
 
