@@ -47,3 +47,7 @@ Never commit:
 - MCP client config files containing credentials
 
 Use fake IDs and fake task content in tests and docs.
+
+## Releasing
+
+Maintainers should follow the [release checklist](docs/RELEASING.md) when publishing a new version to PyPI.

@@ -335,6 +335,8 @@ Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and avo
 
 Good first contributions are small tests, docs improvements, focused error-message improvements, or mocked TickTick API fixtures.
 
+Maintainers releasing a new version should follow the [release checklist](docs/RELEASING.md).
+
 ## Security
 
 Do not open public issues with credentials or private task data. See [SECURITY.md](SECURITY.md).
